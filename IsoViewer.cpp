@@ -59,7 +59,7 @@ IsoViewer::IsoViewer(QWidget *parent)
     // is required to simulate a reset as implemented in the resizeEvent() method
     this->reset_timer->setSingleShot(true);
 
-    // this->connect the timer's timeout signal to the draw() method
+    // Connect the timer's timeout signal to the draw() method
     this->connect(reset_timer, &QTimer::timeout, this, &IsoViewer::draw);
     
     // Says whether the timer must be used or not
@@ -137,8 +137,10 @@ void IsoViewer::initOptions()
     // If the config file does not exists
     if (!fileExists(this->config_file))
     {
+        // Initialize a new config file with the default values
         this->initConfigFile();
 
+        // Set the checkboxes
         ui.chk_fit->setChecked(false);
         ui.chk_autoresize->setChecked(false);
         ui.chk_color->setChecked(false);
@@ -146,16 +148,23 @@ void IsoViewer::initOptions()
     }
     else
     {
+        // Open the config file in read mode
         std::ifstream ifs(this->config_file);
 
+        // Instantiate a json object
         json j;
 
+        // Import the file content into the json object
         ifs >> j;
 
         ifs.close();
 
+        // If the folder key is present
         if (j["folder"] != "")
+            // Set it as the current folder to open
             this->folder = j["folder"];
+
+        // Set the checkboxes according to the config file content
 
         if(j["fit"] == 0)
             ui.chk_fit->setChecked(false);
@@ -614,11 +623,11 @@ void IsoViewer::setScene()
             if (this->scale_factor > 1)
             {
                 this->scale_factor = 1;
-
-                // Assign the slab size
-                this->scene_w = width * this->scale_factor;
-                this->scene_h = height * this->scale_factor;
             }
+
+            // Assign the slab size
+            this->scene_w = width * this->scale_factor;
+            this->scene_h = height * this->scale_factor;
         }
         // The slab size has not been set
         else
@@ -626,7 +635,7 @@ void IsoViewer::setScene()
             // To calculate the scale factor, consider the drwaing size
             this->scale_factor = this->scaleFactor(this->x_max, this->y_max);
 
-                // As above
+            // As above
             if (this->scale_factor > 1)
             {
                 this->scale_factor = 1;
@@ -686,20 +695,21 @@ QList<QVector3D> IsoViewer::getCoordinates()
         {
             // Find the line where an ISO file begins.
             // This is inside a loop because several files could have been queued into one and
-            // the 2 lines below must be added after the begin of each of them.
+            // the 2 lines below must be added after the beginning of each of them.
             if (loc.indexOf("QUOTE RELATIVE") == 0)
             {
                 // Add at the beginning of the list
                 start_position.insert(0, j);
             }
+
             j += 1;
         }
-
-        foreach(int pos, start_position)
+        
+        foreach(unsigned int pos, start_position)
         {
             // Add this two lines to adapt it to a general PGR file
-            iso.insert(pos + 5, "G12 Z0");
-            iso.insert(pos + 7, "G02 Z-10");
+            iso.insert(static_cast<qsizetype>(pos) + 5, "G12 Z0");
+            iso.insert(static_cast<qsizetype>(pos) + 7, "G02 Z-10");
         }
     }
 
@@ -993,8 +1003,7 @@ int IsoViewer::mapRange(const float& value, const float& source_min, const float
     {
         ranged_value = target_min;
     }
-    
-    if (ranged_value > target_max)
+    else if (ranged_value > target_max)
     {
         ranged_value = target_max;
     }
@@ -1399,21 +1408,18 @@ QString IsoViewer::secondsToTimestring(const int seconds)
 
     QString hh, mm, ss;
 
+    hh = QString::number(hours);
     if (hours < 10)
-        hh = "0" + QString::number(hours);
-    else
-        hh = QString::number(hours);
+        hh = "0" + hh;
 
     minutes = minutes % 60;
+    mm = QString::number(minutes);
     if (minutes < 10)
-        mm = "0" + QString::number(minutes);
-    else
-        mm = QString::number(minutes);
+        mm = "0" + mm;
 
+    ss = QString::number(secs);
     if (secs < 10)
-        ss = "0" + QString::number(secs);
-    else
-        ss = QString::number(secs);
+        ss = "0" + ss;
 
     return hh + ":" + mm + ":" + ss;
 }
