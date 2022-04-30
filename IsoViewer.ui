@@ -18,6 +18,9 @@
   <property name="windowTitle">
    <string>IsoViewer</string>
   </property>
+  <property name="toolTip">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -84,6 +87,9 @@
               <property name="mouseTracking">
                <bool>true</bool>
               </property>
+              <property name="toolTip">
+               <string notr="true"/>
+              </property>
               <property name="verticalScrollBarPolicy">
                <enum>Qt::ScrollBarAlwaysOff</enum>
               </property>
@@ -117,7 +123,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Load Files</string>
+              <string>Carica File</string>
              </property>
             </widget>
            </item>
@@ -127,6 +133,9 @@
               <font>
                <pointsize>8</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -264,6 +273,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>0</string>
              </property>
@@ -375,6 +387,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>Y max</string>
              </property>
@@ -401,6 +416,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>X max</string>
@@ -483,6 +501,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>X min</string>
              </property>
@@ -509,6 +530,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>1000</string>
@@ -564,6 +588,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -591,6 +618,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>Z max</string>
              </property>
@@ -617,6 +647,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -672,6 +705,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>mm/min</string>
              </property>
@@ -698,6 +734,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>0</string>
@@ -753,6 +792,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -779,6 +821,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -807,6 +852,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -833,6 +881,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -890,6 +941,9 @@
              <pointsize>12</pointsize>
             </font>
            </property>
+           <property name="toolTip">
+            <string notr="true"/>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -943,6 +997,9 @@
             <font>
              <pointsize>12</pointsize>
             </font>
+           </property>
+           <property name="toolTip">
+            <string notr="true"/>
            </property>
            <property name="text">
             <string/>
@@ -1003,6 +1060,9 @@
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>X</string>
              </property>
@@ -1029,6 +1089,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -1057,6 +1120,9 @@
                <pointsize>11</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>Y</string>
              </property>
@@ -1083,6 +1149,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -1203,7 +1272,7 @@
               <string>Rigenera il disegno al ridimensionamento della finestra</string>
              </property>
              <property name="text">
-              <string>Autoresize</string>
+              <string>Rigenera</string>
              </property>
             </widget>
            </item>
@@ -1257,6 +1326,22 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1347</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuLingua">
+    <property name="title">
+     <string>Lingua</string>
+    </property>
+   </widget>
+   <addaction name="menuLingua"/>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

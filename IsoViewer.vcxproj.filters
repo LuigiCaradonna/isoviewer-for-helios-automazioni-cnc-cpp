@@ -51,4 +51,12 @@
     <None Include=".gitignore" />
     <None Include="README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="isoviewer_en.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+    <QtTranslation Include="isoviewer_it.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+  </ItemGroup>
 </Project>

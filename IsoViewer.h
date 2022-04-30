@@ -3,8 +3,11 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QAction>
+#include <QActionGroup>
 #include <QFileDialog>
 #include <QProgressDialog>
+#include <QTranslator>
 #include <fstream>
 #include <iostream>
 #include <QVector2D>
@@ -306,6 +309,27 @@ public:
      */
     void draw();
 
+protected:
+    /*
+     * Overrides the QMainWindow changeEvent() called when there is a change in the window.
+     * Here it is used to manage the language changes.
+     *
+     * @param   QEvent*    event
+     *
+     * @return void
+     */
+    void changeEvent(QEvent* event) override;
+
+protected slots:
+    /*
+     * This slot is called by the language menu actions to translate the UI
+     *
+     * @param   QAction*    action
+     *
+     * @return void
+     */
+    void slotLanguageChanged(QAction* action);
+
 private:
     // The vector containing the coordinates consists of float values.
     // The following two costants are used to indicate the UP and DOWN positions of the tool.
@@ -389,6 +413,17 @@ private:
     // User interface
     Ui::IsoViewerClass ui;
 
+    // Contains the translations for this application
+    QTranslator m_translator;
+
+    // Contains the translations for qt
+    QTranslator m_translatorQt;
+
+    // Contains the currently loaded language
+    QString m_currLang;
+
+    // Path of language files. This is always fixed to /languages.
+    QString m_langPath;
 
     /********** PRIVATE FUNCTIONS **********/
 
@@ -426,4 +461,31 @@ private:
      * @return  QString    The formatted time string.
      */
     QString secondsToTimestring(const int seconds);
+
+
+    /*
+     * Loads a language by the given language shortcut
+     *
+     * @param   const QString&      rLanguage     - The language code (e.g. it, en)
+     *
+     * @return void
+     */
+     void loadLanguage(const QString& rLanguage);
+
+     /*
+      * Creates the language menu dynamically from the content of m_langPath
+      *
+      * @return void
+      */
+      void createLanguageMenu();
+
+      /*
+       * Updates the translator to use according to the selected language
+       *
+       * @param   QTranslator&        translator
+       * @param   const QString&      filename
+       *
+       * @return void
+       */
+       void switchTranslator(QTranslator& translator, const QString& filename);
 };

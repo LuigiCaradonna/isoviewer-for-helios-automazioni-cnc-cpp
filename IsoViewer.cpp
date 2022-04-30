@@ -10,6 +10,8 @@ IsoViewer::IsoViewer(QWidget *parent)
     // Sets an icon for the window
     this->setWindowIcon(QIcon("favicon.png"));
 
+    this->createLanguageMenu();
+
     // Instantiates a scene
     this->scene = new MyGraphicScene();
     // Intercepts the signal emitted and this->connects it to the mousePosition() method
@@ -125,7 +127,6 @@ void IsoViewer::showEvent(QShowEvent* event)
     this->scene_w = canvas_size.x();
     this->scene_h = canvas_size.y();
 }
-
 
 /********** PUBLIC FUNCTIONS **********/
 
@@ -1356,6 +1357,43 @@ void IsoViewer::draw()
     }
 }
 
+/********** PROTECTED FUNCTIONS **********/
+
+void IsoViewer::changeEvent(QEvent* event)
+{
+    if (0 != event)
+    {
+        switch (event->type())
+        {
+        // this event is send if a translator is loaded
+        case QEvent::LanguageChange:
+            ui.retranslateUi(this);
+            break;
+
+        // this event is send, if the system, language changes
+        case QEvent::LocaleChange:
+        {
+            QString locale = QLocale::system().name();
+            locale.truncate(locale.lastIndexOf('_'));
+            loadLanguage(locale);
+        }
+        break;
+        }
+    }
+    QMainWindow::changeEvent(event);
+}
+
+/********** PROTECTED SLOTS **********/
+
+void IsoViewer::slotLanguageChanged(QAction* action)
+{
+    if (0 != action)
+    {
+        // Load the language dependent on the action content
+        loadLanguage(action->data().toString());
+    }
+}
+
 
 /********** PRIVATE FUNCTIONS **********/
 
@@ -1422,4 +1460,74 @@ QString IsoViewer::secondsToTimestring(const int seconds)
         ss = "0" + ss;
 
     return hh + ":" + mm + ":" + ss;
+}
+
+void IsoViewer::loadLanguage(const QString& rLanguage)
+{
+    if (m_currLang != rLanguage)
+    {
+        m_currLang = rLanguage;
+        QLocale locale = QLocale(m_currLang);
+        QLocale::setDefault(locale);
+        QString languageName = QLocale::languageToString(locale.language());
+        switchTranslator(m_translator, QString("isoviewer_%1.qm").arg(rLanguage));
+        switchTranslator(m_translatorQt, QString("qt_%1.qm").arg(rLanguage));
+    }
+}
+
+void IsoViewer::switchTranslator(QTranslator& translator, const QString& filename)
+{
+    // Remove the old translator
+    qApp->removeTranslator(&translator);
+
+    // Load the new translator
+    QString path = QApplication::applicationDirPath();
+    path.append("/languages/");
+
+    // Here Path and Filename has to be entered because the system didn't find the QM Files else
+    if (translator.load(path + filename))
+        qApp->installTranslator(&translator);
+}
+
+void IsoViewer::createLanguageMenu()
+{
+    QActionGroup* langGroup = new QActionGroup(ui.menuLingua);
+    langGroup->setExclusive(true);
+
+    connect(langGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotLanguageChanged(QAction*)));
+
+    // Format systems language
+    QString defaultLocale = QLocale::system().name(); // e.g. "it_IT"
+    defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "it"
+
+    m_langPath = QApplication::applicationDirPath();
+    m_langPath.append("/languages");
+
+    QDir dir(m_langPath);
+    QStringList fileNames = dir.entryList(QStringList("isoviewer_*.qm"));
+
+    for (int i = 0; i < fileNames.size(); ++i)
+    {
+        // Get locale extracted by filename
+        QString locale;
+        locale = fileNames[i]; // "isoviewer_it.qm"
+        locale.truncate(locale.lastIndexOf('.')); // "isoviewer_it"
+        locale.remove(0, locale.lastIndexOf('_') + 1); // "it"
+
+        QString lang = QLocale::languageToString(QLocale(locale).language());
+        QIcon ico(QString("%1/%2.png").arg(m_langPath).arg(locale));
+
+        QAction* action = new QAction(ico, lang, this);
+        action->setCheckable(true);
+        action->setData(locale);
+
+        ui.menuLingua->addAction(action);
+        langGroup->addAction(action);
+
+        // Set default translators and language checked
+        if (defaultLocale == locale)
+        {
+            action->setChecked(true);
+        }
+    }
 }
