@@ -122,6 +122,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>Carica File</string>
              </property>
@@ -138,7 +141,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="textFormat">
               <enum>Qt::PlainText</enum>
@@ -164,6 +167,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>Elabora</string>
              </property>
@@ -187,6 +193,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Reset</string>
@@ -277,7 +286,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>0</string>
+              <string notr="true">0</string>
              </property>
              <property name="maxLength">
               <number>32767</number>
@@ -333,6 +342,9 @@
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="toolTip">
+              <string>Distanza riposizionamenti in mm</string>
+             </property>
              <property name="text">
               <string>DST Pos.</string>
              </property>
@@ -361,7 +373,7 @@
               </font>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -391,7 +403,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>Y max</string>
+              <string notr="true">Y max</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -421,7 +433,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>X max</string>
+              <string notr="true">X max</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -448,7 +460,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Offset</string>
+              <string notr="true">Offset</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -473,6 +485,9 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="toolTip">
+              <string>Distanza incisione in mm</string>
              </property>
              <property name="text">
               <string>DST Inc.</string>
@@ -505,7 +520,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>X min</string>
+              <string notr="true">X min</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -535,7 +550,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>1000</string>
+              <string notr="true">1000</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -562,7 +577,7 @@
               </font>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -592,7 +607,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -622,7 +637,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>Z max</string>
+              <string notr="true">Z max</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -652,7 +667,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -709,7 +724,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>mm/min</string>
+              <string notr="true">mm/min</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -739,7 +754,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>0</string>
+              <string notr="true">0</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -766,7 +781,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Y min</string>
+              <string notr="true">Y min</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -796,7 +811,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -826,7 +841,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -856,7 +871,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -886,7 +901,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -945,7 +960,7 @@
             <string notr="true"/>
            </property>
            <property name="text">
-            <string/>
+            <string notr="true"/>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -1002,7 +1017,7 @@
             <string notr="true"/>
            </property>
            <property name="text">
-            <string/>
+            <string notr="true"/>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -1064,7 +1079,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>X</string>
+              <string notr="true">X</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1094,7 +1109,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1124,7 +1139,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>Y</string>
+              <string notr="true">Y</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1154,7 +1169,7 @@
               <string notr="true"/>
              </property>
              <property name="text">
-              <string/>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1344,6 +1359,20 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>in_width</tabstop>
+  <tabstop>in_height</tabstop>
+  <tabstop>in_tool_speed</tabstop>
+  <tabstop>chk_fit</tabstop>
+  <tabstop>chk_autoresize</tabstop>
+  <tabstop>chk_sculpture</tabstop>
+  <tabstop>chk_color</tabstop>
+  <tabstop>chk_gradient</tabstop>
+  <tabstop>btn_browse_file</tabstop>
+  <tabstop>btn_draw</tabstop>
+  <tabstop>btn_reset</tabstop>
+  <tabstop>canvas</tabstop>
+ </tabstops>
  <resources>
   <include location="IsoViewer.qrc"/>
  </resources>

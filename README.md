@@ -1,14 +1,15 @@
 # Isoviewer for Helios Automazioni srl CNC Machines
 
 > This version is a C++ porting of the [Python version](https://github.com/LuigiCaradonna/isoviewer-for-helios-automazioni-cnc).
-> 
-> 
 
 This software reads proprietary GCode files with PGR extension and shows the path followed by the tools during the job.
 
 > This is **NOT** an official software developed by [Helios Automazioni srl](https://www.heliosautomazioni.com/it/home-it.html).
 >
 > I am computer engineer employed as a technical designer and a CNC programmer at [Centro Marmi D'Arcangeli srl](https://www.cmdarcangeli.com), sometimes I found useful to see what an ISO file contains, for this reason I decided to develop this tool.
+
+## What's new in the latest version
+Introduced multilanguage support (English and Italian)
 
 ## Features
 - Import multiple files at once
@@ -28,14 +29,14 @@ The whole software is written in `C++`, using `Qt6` to build the user interface.
 
 ## How to use
 ![Graphic User Interface](/ui.png)
-The basic usage only requires to click on the `Load files` button (22) and select one or more PGR files, then to click on the `Elabora` button (23).  
+The basic usage only requires to click on the `Load files` button (22) and select one or more PGR files, then to click on the `Process` button (23).  
 However you have the possibility to set several options to have different behaviours.  
 You can set the actual width and height (2 and 3) of the material to work and the drawing will respect its real position inside the material bounds, which will be displayed.  
 The provided speed of the tool (4) will have an impact only on the estimated time, which as you can read above is not accurate due to several reasons not depending on the software but on the machine's behaviour.  
-By selecting the `Adatta` checkbox (17) the drawing will be scaled to fit the drawing area, this will have effect only for drawings which are smaller than the drawing area, those bigger, will be scaled down in any case, or part of them would not be visible.  
-`Autoresize` (18), when checked, will cause the drawing to be regenerated if the main window is resized to adapt to the new drawing area size.  
-If the file selected contains the instructions to engrave a sculpture, the `Scultura` checkbox (19) **must** be checked because that kind of file is slightly different from the regular ones and the software needs to be informed to correctly read the file.  
-Operating on the `Colori` checkbox (20) it is possible to decide to have the drawing displayed using a grayscale (unchecked) or colors (checked). Depending on the `Gradiente` checkbox (21) status, the segments will be drawn using a solid line (unchecked) or a gradient effect (checked).  
+By selecting the `Fit` checkbox (17) the drawing will be scaled to fit the drawing area, this will have effect only for drawings which are smaller than the drawing area, those bigger, will be scaled down in any case, or part of them would not be visible.  
+`Regenerate` (18), when checked, will cause the drawing to be regenerated if the main window is resized to adapt to the new drawing area size.  
+If the file selected contains the instructions to engrave a sculpture, the `Sculpture` checkbox (19) **must** be checked because that kind of file is slightly different from the regular ones and the software needs to be informed to correctly read the file.  
+Operating on the `Colors` checkbox (20) it is possible to decide to have the drawing displayed using a grayscale (unchecked) or colors (checked). Depending on the `Gradient` checkbox (21) status, the segments will be drawn using a solid line (unchecked) or a gradient effect (checked).  
 The software only shows segments with positive coordinates, for this reason, when a drawing has parts with negative coordinates, it will be translated to have all of its parts in a positive area (first quadrant of the Cartesian plane). When such a condition occurs, inside the `Offset` field (10) will be stated along which axis the drawing has been translated (X, Y, or X and Y).
 
 **1 -** Drawing area, here is where the drawing will be displayed  
@@ -58,6 +59,7 @@ The software only shows segments with positive coordinates, for this reason, whe
 **24 -** Resets everything: input values, drawing area and eventual error messages  
 **25 -** On this line will appear the name(s) of the selected file(s)  
 **26 -** Status bar, this will contain eventual error messages  
+**27 -** Language menu to change the interface language  
 
 ## How to compile
 The project has been developed using Visual Studio 2022 CE.

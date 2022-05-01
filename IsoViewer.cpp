@@ -391,7 +391,7 @@ void IsoViewer::browseFile()
     QString file_name;
 
     // Allows multiple files selection
-    this->iso_files = QFileDialog::getOpenFileNames(this, "Open File", QString::fromUtf8(this->folder.c_str()), filter);
+    this->iso_files = QFileDialog::getOpenFileNames(this, tr("Apri File"), QString::fromUtf8(this->folder.c_str()), filter);
 
     // Builds the string containing all the names of the selected files
     foreach(QString file, this->iso_files)
@@ -440,7 +440,7 @@ bool IsoViewer::checkData()
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text) || fi.suffix() != "PGR")
         {
             this->ui.lbl_selected_file->setStyleSheet("border: 1px solid red");
-            this->ui.statusbar->showMessage("Selezionare solo file ISO validi");
+            this->ui.statusbar->showMessage(tr("Selezionare solo file ISO validi"));
             return false;
         }
         // If the file exists and it has the PGR extension
@@ -454,7 +454,7 @@ bool IsoViewer::checkData()
             {
                 this->ui.lbl_selected_file->setStyleSheet("border: 1px solid red");
 
-                this->ui.statusbar->showMessage("Selezionare solo file ISO validi");
+                this->ui.statusbar->showMessage(tr("Selezionare solo file ISO validi"));
                 return false;
             }
         }
@@ -474,7 +474,7 @@ bool IsoViewer::checkData()
     if (!ok || width < 0)
     {
         this->ui.in_width->setStyleSheet("border: 1px solid red");
-        this->ui.statusbar->showMessage("Indicare una larghezza valida (numero intero positivo o 0)");
+        this->ui.statusbar->showMessage(tr("Indicare una larghezza valida (numero intero positivo o 0)"));
         return false;
     }
     // The value is valid
@@ -498,7 +498,7 @@ bool IsoViewer::checkData()
     if (!ok || height < 0)
     {
         this->ui.in_height->setStyleSheet("border: 1px solid red");
-        this->ui.statusbar->showMessage("Indicare un'altezza valida (numero intero positivo o 0)");
+        this->ui.statusbar->showMessage(tr("Indicare un'altezza valida (numero intero positivo o 0)"));
         return false;
     }
     // The value is valid
@@ -522,7 +522,7 @@ bool IsoViewer::checkData()
     if (!ok || tool_speed <= 0)
     {
         this->ui.in_tool_speed->setStyleSheet("border: 1px solid red");
-        this->ui.statusbar->showMessage("Indicare una velocità valida (numero intero positivo)");
+        this->ui.statusbar->showMessage(tr("Indicare una velocità valida (numero intero positivo)"));
         return false;
     }
     // The value is valid
@@ -537,7 +537,7 @@ bool IsoViewer::checkData()
     {
         // Both the sizes must be set or none of them
         this->ui.in_height->setStyleSheet("border: 1px solid red");
-        this->ui.statusbar->showMessage("Indicare entrambe le dimensioni o nessuna");
+        this->ui.statusbar->showMessage(tr("Indicare entrambe le dimensioni o nessuna"));
         return false;
     }
 
@@ -546,7 +546,7 @@ bool IsoViewer::checkData()
     {
         // Both the sizes must be set or none of them
         this->ui.in_width->setStyleSheet("border: 1px solid red");
-        this->ui.statusbar->showMessage("Indicare entrambe le dimensioni o nessuna");
+        this->ui.statusbar->showMessage(tr("Indicare entrambe le dimensioni o nessuna"));
         return false;
     }
 
@@ -717,7 +717,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
     int num_rows = iso.length();
 
     // Progress dialog shown while processing the list of instructions
-    QProgressDialog progress_dialog = QProgressDialog("Estrapolazione coordinate", "Annulla", 0, num_rows - 1, this);
+    QProgressDialog progress_dialog = QProgressDialog(tr("Estrapolazione coordinate"), tr("Annulla"), 0, num_rows - 1, this);
     progress_dialog.setModal(true);
     progress_dialog.setMinimumDuration(0);
 
@@ -1110,7 +1110,7 @@ void IsoViewer::draw()
         }
         else
         {
-            this->ui.lbl_offset_value->setText("No");
+            this->ui.lbl_offset_value->setText(tr("No"));
         }
 
         // Drawing size
@@ -1124,8 +1124,8 @@ void IsoViewer::draw()
         );
 
         // Progress dialog to show while processing the list of coordinates
-        QProgressDialog progress_dialog = QProgressDialog("Elaborazione primitive",
-            "Annulla", 0, num_coords - 1, this);
+        QProgressDialog progress_dialog = QProgressDialog(tr("Elaborazione primitive"),
+            tr("Annulla"), 0, num_coords - 1, this);
         progress_dialog.setModal(true);
         progress_dialog.setMinimumDuration(0);
 
@@ -1497,7 +1497,7 @@ void IsoViewer::createLanguageMenu()
     connect(langGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotLanguageChanged(QAction*)));
 
     // Format systems language
-    QString defaultLocale = QLocale::system().name(); // e.g. "it_IT"
+    QString defaultLocale = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
     defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "it"
 
     m_langPath = QApplication::applicationDirPath();
