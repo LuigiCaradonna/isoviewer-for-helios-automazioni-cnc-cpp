@@ -92,7 +92,7 @@
     <message>
         <location filename="IsoViewer.ui" line="346"/>
         <source>Distanza riposizionamenti in mm</source>
-        <translation></translation>
+        <translation>Repositioning distance in mm</translation>
     </message>
     <message>
         <location filename="IsoViewer.ui" line="349"/>
@@ -102,7 +102,7 @@
     <message>
         <location filename="IsoViewer.ui" line="490"/>
         <source>Distanza incisione in mm</source>
-        <translation></translation>
+        <translation>Engraving distance in mm</translation>
     </message>
     <message>
         <location filename="IsoViewer.ui" line="493"/>
