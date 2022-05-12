@@ -557,17 +557,15 @@ float IsoViewer::scaleFactor(int w, int h)
 {
     // I do not use this->scene_w and this->scene_h set into showEvent()
     // for the size of the scene, because after that the window is shown it could have been
-    // resizedand the canvas size could have been changed
+    // resized and the canvas size could have been changed
 
     // Canvas size
     QVector2D canvas_size = this->getCanvasSize();
-    float canvas_w = canvas_size.x();
-    float canvas_h = canvas_size.y();
 
     // Calculates the scale factor to fit the width
-    float scale_x = canvas_w / w;
+    float scale_x = canvas_size.x() / w;
     // Calculates the scale factor to fit the hight
-    float scale_y = canvas_h / h;
+    float scale_y = canvas_size.y() / h;
 
     // Return the smallest scale factor
     if (scale_x <= scale_y)
@@ -597,9 +595,13 @@ void IsoViewer::setScene()
             // Calculate the scale factor to fit the scene
             this->scale_factor = this->scaleFactor(width, height);
 
-            // Assign the slab size resized according to the scale factor
-            this->scene_w = width * this->scale_factor;
-            this->scene_h = height * this->scale_factor;
+            // Adjust the slab size by the scale factor (also used ahead)
+            width = width * this->scale_factor;
+            height = height * this->scale_factor;
+
+            // Assign the adjusted slab size to the scene
+            this->scene_w = width;
+            this->scene_h = height;
         }
         // The slab size has not been set
         else
@@ -621,14 +623,27 @@ void IsoViewer::setScene()
 
             // The scale factor must be != 1 only if the regular drawing's size exceeds the canvas
             // which happens if the scale factor calculated is less than 1
-            if (this->scale_factor > 1)
+            if (this->scale_factor >= 1)
             {
+                // No need to fit the drawing, reset the scale factor to 1
                 this->scale_factor = 1;
-            }
 
-            // Assign the slab size
-            this->scene_w = width * this->scale_factor;
-            this->scene_h = height * this->scale_factor;
+                // Both the canvas' dimensions are bigger or same then the relative ones of the drawing
+                // Set the scene as big as the canvas
+                this->scene_w = canvas_size.x();
+                this->scene_h = canvas_size.y();
+            }
+            // The scale factor is less than 1, meaning that at least one drawing dimension exceedes the canvas
+            else
+            {
+                // Adjust the slab size by the scale factor (also used ahead)
+                width = width * this->scale_factor;
+                height = height * this->scale_factor;
+
+                // Assign the adjusted slab size to the scene
+                this->scene_w = width;
+                this->scene_h = height;
+            }
         }
         // The slab size has not been set
         else
@@ -649,13 +664,13 @@ void IsoViewer::setScene()
     }
 
     // Set the scene as big as the canvas
-    this->scene->setSceneRect(0, 0, canvas_size.x(), canvas_size.y());
+    this->scene->setSceneRect(0, 0, this->scene_w, this->scene_h);
 
     // If the size for the slab has been set
     if (width > 0)
     {
         // Draw a rectangle defining it
-        this->scene->addRect(QRectF(0, 0, this->scene_w, this->scene_h));
+        this->scene->addRect(QRectF(0, this->scene_h, width, -height));
     }
 }
 
@@ -729,8 +744,6 @@ QList<QVector3D> IsoViewer::getCoordinates()
     // Counter for the prograss dialog
     int i = 0;
 
-    // Says if the tool is over the first point where it lowes to engrave
-    bool first_down = false;
     // The position where the engraving starts is after the second G12 Z0
     // the variable is a counter to recognize it
     int z_down = 0;
@@ -770,7 +783,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
             // Split the code
             subline = line_of_code.split(" ");
 
-            // The second element is the X coordinate, remove the first character(X)
+            // The second element is the X coordinate, remove the first character (X)
             // limit the number to 3 decimals
             x = this->truncToDecimal(subline[1].mid(1).toFloat(), 3);
 
@@ -785,7 +798,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
                 this->x_max = x;
             }
 
-            // The third element is the Y coordinate, remove the first character(Y)
+            // The third element is the Y coordinate, remove the first character (Y)
             // limit the number to 3 decimals
             y = this->truncToDecimal(subline[2].mid(1).toFloat(), 3);
 
@@ -800,7 +813,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
                 this->y_max = y;
             }
 
-            // The fourth element is the Z coordinate, remove the first character(Z)
+            // The fourth element is the Z coordinate, remove the first character (Z)
             // limit the number to 3 decimals
             z = this->truncToDecimal(subline[3].mid(1).toFloat(), 3);
 
@@ -824,16 +837,16 @@ QList<QVector3D> IsoViewer::getCoordinates()
             // Split the code
             subline = line_of_code.split(" ");
 
-            // The second element is the X coordinate, remove the first character(X)
+            // The second element is the X coordinate, remove the first character (X)
             // limit the number to 3 decimals
             x = this->truncToDecimal(subline[1].mid(1).toFloat(), 3);
 
-            // The third element is the Y coordinate, remove the first character(Y)
+            // The third element is the Y coordinate, remove the first character (Y)
             // limit the number to 3 decimals
             y = this->truncToDecimal(subline[2].mid(1).toFloat(), 3);
 
-            // If this is the first place where the tool lowers to engrave
-            if (first_down)
+            // If the X and Y values are not 0, an engraving will start from this point
+            if (x != 0 && y != 0)
             {
                 // Update the x min
                 if (x <= this->x_min)
@@ -858,9 +871,6 @@ QList<QVector3D> IsoViewer::getCoordinates()
                 {
                     this->y_max = y;
                 }
-
-                // Reset the flag, from now on it will not be used anymore
-                first_down = false;
             }
 
             //Add the coordinates to the list, this will always be preceded by an "up"
@@ -881,23 +891,6 @@ QList<QVector3D> IsoViewer::getCoordinates()
         // Rows starting with G12 Z0 indicate the only vertical movement to raise the tool from the working plane
         else if (line_of_code.indexOf("G12 Z0") == 0)
         {
-            // If the second G12 Z0 has not yet been found
-            if (z_down < 2)
-            {
-                // Increment the counter
-                z_down += 1;
-            }
-
-            // If the second G12 Z0 has just been found
-            if (z_down == 2)
-            {
-                // Set the flag to True to say that here the tool will lower for the first time
-                first_down = true;
-
-                // Increment the counter to have z_down > 2 to not trigger the first_down = True again
-                z_down += 1;
-            }
-
             /*
              * Example
              * G02 X100 Y0 Z-10
@@ -938,6 +931,13 @@ QList<QVector3D> IsoViewer::getCoordinates()
     if (this->offset_x > 0 || this->offset_y > 0)
     {
         this->translateCoords(coords, this->offset_x, this->offset_y);
+
+        // Update the x/y min and max
+        // min will be 0, max are the old max plus the absolute value of the old mins
+        this->x_max += abs(this->x_min);
+        this->y_max += abs(this->y_min);
+        this->x_min = 0;
+        this->y_min = 0;
     }
     // If the user wants to fit the drawing into the canvas AND didn't provide a size for the slab
     // To check if the size was provided is enough to check for one of them, the validation functions
