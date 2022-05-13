@@ -702,6 +702,21 @@ QList<QVector3D> IsoViewer::getCoordinates()
     // List of all the instructions contained inside the selected files
     QStringList iso;
 
+    // Says if a point has been found into the z_max_list
+    bool point_found = false;
+
+    // The position where the engraving starts is after the second G12 Z0
+    // the variable is a counter to recognize it
+    int z_down = 0;
+
+    // At each iteration, this will contain the current line of code splitted
+    QStringList subline;
+
+    // These will contain the x, y and z coordinate to add to the coordinates list
+    float x = 0.f;
+    float y = 0.f;
+    float z = 0.f;
+
     foreach (QString f, this->iso_files)
     {
         QFile file(f);
@@ -762,18 +777,6 @@ QList<QVector3D> IsoViewer::getCoordinates()
     // Counter for the prograss dialog
     int i = 0;
 
-    // The position where the engraving starts is after the second G12 Z0
-    // the variable is a counter to recognize it
-    int z_down = 0;
-
-    // At each iteration, this will contain the current line of code splitted
-    QStringList subline;
-
-    // These will contain the x, y and z coordinate to add to the coordinates list
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
-
     foreach(QString line_of_code, iso) 
     {
         // Reset the subline
@@ -806,12 +809,12 @@ QList<QVector3D> IsoViewer::getCoordinates()
             x = this->truncToDecimal(subline[1].mid(1).toFloat(), 3);
 
             // Update the x min
-            if (x <= this->x_min)
+            if (x < this->x_min)
             {
                 this->x_min = x;
             }
             // Update the x max
-            if (x >= this->x_max)
+            if (x > this->x_max)
             {
                 this->x_max = x;
             }
@@ -821,12 +824,12 @@ QList<QVector3D> IsoViewer::getCoordinates()
             y = this->truncToDecimal(subline[2].mid(1).toFloat(), 3);
 
             // Update the y min
-            if (y <= this->y_min)
+            if (y < this->y_min)
             {
                 this->y_min = y;
             }
             // Update the y max
-            if (y >= this->y_max)
+            if (y > this->y_max)
             {
                 this->y_max = y;
             }
@@ -851,13 +854,27 @@ QList<QVector3D> IsoViewer::getCoordinates()
             {
                 // The tool could pass multiple times over the same point, we do not want to highlight
                 // multiple times the same point
+
+                // A new loop is starting, reset the variable to false
+                point_found = false;
+
                 for (QVector2D point : this->z_max_list)
                 {
-                    if (x != point.x() && y != point.y())
+                    // If a point with the same coordinates is already contained by the list
+                    if (x == point.x() && y == point.y())
                     {
-                        // Add the point to the list
-                        this->z_max_list.append(QVector2D(x, y));
+                        // Update the boolean variable
+                        point_found = true;
+                        // Stop the loop, no need to iterate further
+                        break;
                     }
+                }
+
+                // If this point is not already into the list
+                if (!point_found)
+                {
+                    // Add the point to the list
+                    this->z_max_list.append(QVector2D(x, y));
                 }
             }
 
@@ -887,25 +904,25 @@ QList<QVector3D> IsoViewer::getCoordinates()
             if (x != 0 && y != 0)
             {
                 // Update the x min
-                if (x <= this->x_min)
+                if (x < this->x_min)
                 {
                     this->x_min = x;
                 }
 
                 // Update the x max
-                if (x >= this->x_max)
+                if (x > this->x_max)
                 {
                     this->x_max = x;
                 }
 
                 // Update the y min
-                if (y <= this->y_min)
+                if (y < this->y_min)
                 {
                     this->y_min = y;
                 }
 
                 // Update the y max
-                if (y >= this->y_max)
+                if (y > this->y_max)
                 {
                     this->y_max = y;
                 }
