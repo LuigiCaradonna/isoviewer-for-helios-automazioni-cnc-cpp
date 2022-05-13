@@ -107,11 +107,10 @@ public:
      * 
      * @param   const std::string&      key    - Name of the option to change.
      * @param   std::string             value  - Value to set.
-     * @param   std::string             type   - Type of the value "int", "string"...
      * 
      * @return void
      */
-    void updateOptions(const std::string& key, std::string value, std::string type);
+    void updateOptions(const std::string& key, std::string value);
 
     /*
      * Toggles the setting value for the fit option inside the config file.
@@ -140,6 +139,13 @@ public:
      * @return void
      */
     void toggleGradient();
+
+    /*
+     * Toggles the setting value for the z max option inside the config file.
+     *
+     * @return void
+     */
+    void toggleZMax();
 
     /*
      * Updates the last folder used to load a file.
@@ -270,13 +276,26 @@ public:
      * 
      * WARNING: This directly modifies the original vector!
      * 
-     * @param   QList<QVector3D>&       coords  - List of coordinates to be traslated.
+     * @param   QList<QVector3D>&       coords  - List of 3D coordinates to be traslated.
      * @param   int                     dx      - Offset along x axis.
      * @param   int                     dy      - Offset along y axis.
      * 
      * @return void
      */
     void translateCoords(QList<QVector3D>& coords, int dx, int dy);
+
+    /*
+     * Translate the provided coordinates along x and y axes by the given amount dx and dy.
+     *
+     * WARNING: This directly modifies the original vector!
+     *
+     * @param   QList<QVector2D>&       coords  - List of 2D coordinates to be traslated.
+     * @param   int                     dx      - Offset along x axis.
+     * @param   int                     dy      - Offset along y axis.
+     *
+     * @return void
+     */
+    void translateCoords(QList<QVector2D>& coords, int dx, int dy);
 
     /*
      * Estimates the working time in seconds.
@@ -340,6 +359,9 @@ private:
     // Code for the DOWN position of the tool
     const float DOWN = 6000.0f;
 
+    // Radius of the circle to highlight the max depth points
+    const int ZMAX_CIRCLE_RADIUS = 7;
+
     // List of strings containing the selected ISO files
     QStringList iso_files;
     // Scale factor to use to resize the drawing
@@ -374,6 +396,9 @@ private:
     float y_max = -10000;
     // Max z position where the drawing will be performed (grows negative)
     float z_max = 0;
+
+    // List of maximum depth points
+    QList<QVector2D> z_max_list;
 
     // Last Z position, to be updated for each segment, this will be used to know
     // how much the tool must be raised to leave the working surface

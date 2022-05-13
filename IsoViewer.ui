@@ -1183,6 +1183,33 @@
            <property name="topMargin">
             <number>20</number>
            </property>
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="chk_autoresize">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>21</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>21</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>Rigenera il disegno al ridimensionamento della finestra</string>
+             </property>
+             <property name="text">
+              <string>Rigenera</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="1">
             <widget class="QCheckBox" name="chk_color">
              <property name="minimumSize">
@@ -1237,7 +1264,34 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="chk_fit">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>21</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>21</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>Adatta la dimensione del disegno all'area disponibile</string>
+             </property>
+             <property name="text">
+              <string>Adatta</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
             <widget class="QCheckBox" name="chk_gradient">
              <property name="minimumSize">
               <size>
@@ -1264,8 +1318,8 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="chk_autoresize">
+           <item row="2" column="1">
+            <widget class="QCheckBox" name="chk_zmax">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -1284,37 +1338,10 @@
               </font>
              </property>
              <property name="toolTip">
-              <string>Rigenera il disegno al ridimensionamento della finestra</string>
+              <string>Evidenzia i punti di profondità massima</string>
              </property>
              <property name="text">
-              <string>Rigenera</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QCheckBox" name="chk_fit">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>21</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>21</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>Adatta la dimensione del disegno all'area disponibile</string>
-             </property>
-             <property name="text">
-              <string>Adatta</string>
+              <string>Z Max</string>
              </property>
             </widget>
            </item>
@@ -1367,7 +1394,6 @@
   <tabstop>chk_autoresize</tabstop>
   <tabstop>chk_sculpture</tabstop>
   <tabstop>chk_color</tabstop>
-  <tabstop>chk_gradient</tabstop>
   <tabstop>btn_browse_file</tabstop>
   <tabstop>btn_draw</tabstop>
   <tabstop>btn_reset</tabstop>

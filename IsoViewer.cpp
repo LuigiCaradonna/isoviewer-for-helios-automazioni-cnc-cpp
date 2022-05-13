@@ -32,6 +32,7 @@ IsoViewer::IsoViewer(QWidget *parent)
     this->connect(this->ui.chk_autoresize,  &QCheckBox::stateChanged, this, &IsoViewer::toggleAutoresize);
     this->connect(this->ui.chk_color,       &QCheckBox::stateChanged, this, &IsoViewer::toggleColor);
     this->connect(this->ui.chk_gradient,    &QCheckBox::stateChanged, this, &IsoViewer::toggleGradient);
+    this->connect(this->ui.chk_zmax,        &QCheckBox::stateChanged, this, &IsoViewer::toggleZMax);
 
     // Input fieldsand labels styling
     this->ui.lbl_x_min_value->setStyleSheet("background-color: #DDDDDD; border: 1px solid #BBBBBB;");
@@ -118,6 +119,12 @@ void IsoViewer::resizeEvent(QResizeEvent* event)
             this->draw();
         }
     }
+
+    // Adjust the eventual file list to the label where they are shown
+    if (this->selected_files_full_string != "")
+    {
+        this->elideText(*this->ui.lbl_selected_file, this->selected_files_full_string);
+    }
 }
 
 void IsoViewer::showEvent(QShowEvent* event)
@@ -140,12 +147,13 @@ void IsoViewer::initOptions()
     {
         // Initialize a new config file with the default values
         this->initConfigFile();
-
+        
         // Set the checkboxes
         ui.chk_fit->setChecked(false);
         ui.chk_autoresize->setChecked(false);
         ui.chk_color->setChecked(false);
         ui.chk_gradient->setChecked(false);
+        ui.chk_zmax->setChecked(false);
     }
     else
     {
@@ -167,32 +175,37 @@ void IsoViewer::initOptions()
 
         // Set the checkboxes according to the config file content
 
-        if(j["fit"] == 0)
+        if(j["fit"] == "0")
             ui.chk_fit->setChecked(false);
         else
             ui.chk_fit->setChecked(true);
 
-        if (j["autoresize"] == 0)
+        if (j["autoresize"] == "0")
             ui.chk_autoresize->setChecked(false);
         else
             ui.chk_autoresize->setChecked(true);
 
-        if (j["color"] == 0)
+        if (j["color"] == "0")
             ui.chk_color->setChecked(false);
         else
             ui.chk_color->setChecked(true);
 
-        if (j["gradient"] == 0)
+        if (j["gradient"] == "0")
             ui.chk_gradient->setChecked(false);
         else
             ui.chk_gradient->setChecked(true);
+
+        if (j["zmax"] == "0")
+            ui.chk_zmax->setChecked(false);
+        else
+            ui.chk_zmax->setChecked(true);
     }
 }
 
 
 /********** UPDATE FUNCTIONS **********/
 
-void IsoViewer::updateOptions(const std::string& key, std::string value, std::string type)
+void IsoViewer::updateOptions(const std::string& key, std::string value)
 {
     // If the config file does not exists, it should since it is checked as the software runs,
     // but a user playing the joker could delete it while the software is running.
@@ -206,6 +219,7 @@ void IsoViewer::updateOptions(const std::string& key, std::string value, std::st
         this->toggleAutoresize();
         this->toggleColor();
         this->toggleGradient();
+        this->toggleZMax();
     }
 
     /*
@@ -222,10 +236,6 @@ void IsoViewer::updateOptions(const std::string& key, std::string value, std::st
 
     // Load the file content into the json object
     ifs >> j;
-
-    // Convert the value from std::string to the proper type if needed
-    if (type == "int")
-        value = std::stoi(value);
 
     // Update the value at the key position
     j[key] = value;
@@ -246,33 +256,41 @@ void IsoViewer::updateOptions(const std::string& key, std::string value, std::st
 void IsoViewer::toggleFit()
 {
     if (this->ui.chk_fit->isChecked())
-        this->updateOptions("fit", "1", "int");
+        this->updateOptions("fit", "1");
     else
-        this->updateOptions("fit", "0", "int");
+        this->updateOptions("fit", "0");
 }
 
 void IsoViewer::toggleAutoresize()
 {
     if (this->ui.chk_autoresize->isChecked())
-        this->updateOptions("autoresize", "1", "int");
+        this->updateOptions("autoresize", "1");
     else
-        this->updateOptions("autoresize", "0", "int");
+        this->updateOptions("autoresize", "0");
 }
 
 void IsoViewer::toggleColor()
 {
     if (this->ui.chk_color->isChecked())
-        this->updateOptions("color", "1", "int");
+        this->updateOptions("color", "1");
     else
-        this->updateOptions("color", "0", "int");
+        this->updateOptions("color", "0");
 }
 
 void IsoViewer::toggleGradient()
 {
     if (this->ui.chk_gradient->isChecked())
-        this->updateOptions("gradient", "1", "int");
+        this->updateOptions("gradient", "1");
     else
-        this->updateOptions("gradient", "0", "int");
+        this->updateOptions("gradient", "0");
+}
+
+void IsoViewer::toggleZMax()
+{
+    if (this->ui.chk_zmax->isChecked())
+        this->updateOptions("zmax", "1");
+    else
+        this->updateOptions("zmax", "0");
 }
 
 void IsoViewer::updateFolder(const QString& f)
@@ -281,7 +299,7 @@ void IsoViewer::updateFolder(const QString& f)
     // and before to call the update function
     this->folder = f.toStdString();
 
-    this->updateOptions("folder", this->folder, "string");
+    this->updateOptions("folder", this->folder);
 }
 
 /********** ACCESSORS **********/
@@ -821,6 +839,26 @@ QList<QVector3D> IsoViewer::getCoordinates()
             if (z < this->z_max)
             {
                 this->z_max = z;
+
+                // Clear the z_max_list, because a new max has been found
+                this->z_max_list.clear();
+
+                // Insert the new point to the list
+                this->z_max_list.append(QVector2D(x, y));
+            }
+            // This point is at the same depth as the points already in the list
+            else if (z == this->z_max)
+            {
+                // The tool could pass multiple times over the same point, we do not want to highlight
+                // multiple times the same point
+                for (QVector2D point : this->z_max_list)
+                {
+                    if (x != point.x() && y != point.y())
+                    {
+                        // Add the point to the list
+                        this->z_max_list.append(QVector2D(x, y));
+                    }
+                }
             }
 
             // Add the coordinates to the list
@@ -931,6 +969,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
     if (this->offset_x > 0 || this->offset_y > 0)
     {
         this->translateCoords(coords, this->offset_x, this->offset_y);
+        this->translateCoords(this->z_max_list, this->offset_x, this->offset_y);
 
         // Update the x/y min and max
         // min will be 0, max are the old max plus the absolute value of the old mins
@@ -950,6 +989,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
         if (this->x_min > 0 || this->y_min > 0)
         {
             this->translateCoords(coords, -this->x_min, -this->y_min);
+            this->translateCoords(this->z_max_list, -this->x_min, -this->y_min);
 
             // Update the x/y min and max
             // min will be 0, max are the old max minus the amount of the translation along the relative axis
@@ -974,6 +1014,18 @@ void IsoViewer::translateCoords(QList<QVector3D>& coords, int dx, int dy)
             coords[i][0] = coords[i][0] + dx;
             coords[i][1] = coords[i][1] + dy;
             // coords[i][2], which is the z coordinate, stays the same
+        }
+    }
+}
+
+void IsoViewer::translateCoords(QList<QVector2D>& coords, int dx, int dy)
+{
+    for (int i = 0; i < coords.length(); ++i)
+    {
+        if (coords[i][0] != UP && coords[i][0] != DOWN)
+        {
+            coords[i][0] = coords[i][0] + dx;
+            coords[i][1] = coords[i][1] + dy;
         }
     }
 }
@@ -1023,7 +1075,7 @@ void IsoViewer::draw()
          *  VARIABLES INITIALIZATION
          *************************************************************/
 
-        // These keep track of the distance covered by the tool
+         // These keep track of the distance covered by the tool
         float engraving_dst = 0.f;
         float positioning_dst = 0.f;
 
@@ -1334,6 +1386,27 @@ void IsoViewer::draw()
             }
         }
 
+        // If the Z Max checkbox is checked
+        if (this->ui.chk_zmax->isChecked())
+        {
+            QColor color_hl = QColor(255, 0, 0);
+            QPen pen_hl = QPen(QBrush(color_hl), 3);
+
+            // Loop through the z_max_depth list
+            for (QVector2D point : this->z_max_list)
+            {
+                this->scene->addEllipse(
+                    QRect(
+                        (point.x() * this->scale_factor) - ZMAX_CIRCLE_RADIUS,
+                        (this->scene_h - (point.y() * this->scale_factor)) - ZMAX_CIRCLE_RADIUS,
+                        2 * ZMAX_CIRCLE_RADIUS,
+                        2 * ZMAX_CIRCLE_RADIUS
+                    ), 
+                    pen_hl
+                );
+            }
+        }
+
         progress_dialog.setValue(num_coords - 1);
         // Says that there is something on the scene
         this->iso_drawn = true;
@@ -1418,10 +1491,11 @@ void IsoViewer::initConfigFile()
     // Create a json object with the default configuration values
     json j;
 
-    j["fit"] = 0;
-    j["autoresize"] = 0;
-    j["color"] = 0;
-    j["gradient"] = 0;
+    j["fit"] = "0";
+    j["autoresize"] = "0";
+    j["color"] = "0";
+    j["gradient"] = "0";
+    j["zmax"] = "0";
     j["folder"] = "C:/helios1/archivio";
 
     // Write the JSON converted to string into the file

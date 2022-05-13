@@ -4,55 +4,55 @@
 <context>
     <name>IsoViewer</name>
     <message>
-        <location filename="IsoViewer.cpp" line="394"/>
+        <location filename="IsoViewer.cpp" line="400"/>
         <source>Apri File</source>
         <translation>Open Files</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="443"/>
-        <location filename="IsoViewer.cpp" line="457"/>
+        <location filename="IsoViewer.cpp" line="449"/>
+        <location filename="IsoViewer.cpp" line="463"/>
         <source>Selezionare solo file ISO validi</source>
         <translation>Select only valid ISO files</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="477"/>
+        <location filename="IsoViewer.cpp" line="483"/>
         <source>Indicare una larghezza valida (numero intero positivo o 0)</source>
         <translation>Set a valid width (positive number or 0)</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="501"/>
+        <location filename="IsoViewer.cpp" line="507"/>
         <source>Indicare un&apos;altezza valida (numero intero positivo o 0)</source>
         <translation>Set a valid height (positive number or 0)</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="525"/>
+        <location filename="IsoViewer.cpp" line="531"/>
         <source>Indicare una velocità valida (numero intero positivo)</source>
         <translation>Set a valid speed (positive number)</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="540"/>
-        <location filename="IsoViewer.cpp" line="549"/>
+        <location filename="IsoViewer.cpp" line="546"/>
+        <location filename="IsoViewer.cpp" line="555"/>
         <source>Indicare entrambe le dimensioni o nessuna</source>
         <translation>Set both the dimensions or none</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="720"/>
+        <location filename="IsoViewer.cpp" line="741"/>
         <source>Estrapolazione coordinate</source>
         <translation>Extracting coordinates</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="720"/>
-        <location filename="IsoViewer.cpp" line="1128"/>
+        <location filename="IsoViewer.cpp" line="741"/>
+        <location filename="IsoViewer.cpp" line="1134"/>
         <source>Annulla</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="1113"/>
+        <location filename="IsoViewer.cpp" line="1119"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="IsoViewer.cpp" line="1127"/>
+        <location filename="IsoViewer.cpp" line="1133"/>
         <source>Elaborazione primitive</source>
         <translation>Processing primitives</translation>
     </message>
@@ -130,57 +130,67 @@
         <translation>Mouse position</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1206"/>
+        <location filename="IsoViewer.ui" line="1233"/>
         <source>Traccia le linee a colori o scala di grigi</source>
         <translation>Draw the lines with colors or grayscale</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1209"/>
+        <location filename="IsoViewer.ui" line="1236"/>
         <source>Colori</source>
         <translation>Colors</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1233"/>
+        <location filename="IsoViewer.ui" line="1260"/>
         <source>Selezionare se il file rappresenta una scultura</source>
         <translation>To be selected if the file contains a sculpture</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1236"/>
+        <location filename="IsoViewer.ui" line="1263"/>
         <source>Scultura</source>
         <translation>Sculpture</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1260"/>
+        <location filename="IsoViewer.ui" line="1314"/>
         <source>Indica se usare colori sfumati per indicare la profondità di incisione</source>
         <translation>Use a gradient effect to show the engraving depth</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1263"/>
+        <location filename="IsoViewer.ui" line="1317"/>
         <source>Gradiente</source>
         <translation>Gradient</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1287"/>
+        <location filename="IsoViewer.ui" line="1206"/>
         <source>Rigenera il disegno al ridimensionamento della finestra</source>
         <translation>Regenerate the drawing upon window resizing</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1290"/>
+        <location filename="IsoViewer.ui" line="1209"/>
         <source>Rigenera</source>
         <translation>Regenerate</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1314"/>
+        <location filename="IsoViewer.ui" line="1287"/>
         <source>Adatta la dimensione del disegno all&apos;area disponibile</source>
         <translation>Adapt the drawing size to the visible area</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1317"/>
+        <location filename="IsoViewer.ui" line="1290"/>
         <source>Adatta</source>
         <translation>Fit</translation>
     </message>
     <message>
-        <location filename="IsoViewer.ui" line="1355"/>
+        <location filename="IsoViewer.ui" line="1341"/>
+        <source>Evidenzia i punti di profondità massima</source>
+        <translation>Highlight max depth points</translation>
+    </message>
+    <message>
+        <location filename="IsoViewer.ui" line="1344"/>
+        <source>Z Max</source>
+        <translation>Z Max</translation>
+    </message>
+    <message>
+        <location filename="IsoViewer.ui" line="1382"/>
         <source>Lingua</source>
         <translation>Language</translation>
     </message>
