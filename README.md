@@ -9,7 +9,7 @@ This software reads proprietary GCode files with PGR extension and shows the pat
 > I am computer engineer employed as a technical designer and a CNC programmer at [Centro Marmi D'Arcangeli srl](https://www.cmdarcangeli.com), sometimes I found useful to see what an ISO file contains, for this reason I decided to develop this tool.
 
 ## What's new in the latest version
-Introduced multilanguage support (English and Italian)
+New option to highlight the points at maximim depth
 
 ## Features
 - Import multiple files at once
@@ -20,6 +20,7 @@ Introduced multilanguage support (English and Italian)
 - Gradient effect applied to the segments to show the difference in depth of the milling
 - Calculation of the distance traveled both for millings and repositionings
 - Estimate of the working time given the speed of the tool (not reliable)
+- Multilanguage support (English and Italian)
 
 About the working time, the reason why it is not currently reliable, is that the machine doesn't really keep the speed constant while working, it could vary due to the hardness of the material, the complexity of the job and other reasons.
 Where the job is at a constant depth the time results to be almost correct. 
@@ -29,7 +30,7 @@ The whole software is written in `C++`, using `Qt6` to build the user interface.
 
 ## How to use
 ![Graphic User Interface](/ui.png)
-The basic usage only requires to click on the `Load files` button (22) and select one or more PGR files, then to click on the `Process` button (23).  
+The basic usage only requires to click on the `Load files` button (23) and select one or more PGR files, then to click on the `Process` button (24).  
 However you have the possibility to set several options to have different behaviours.  
 You can set the actual width and height (2 and 3) of the material to work and the drawing will respect its real position inside the material bounds, which will be displayed.  
 The provided speed of the tool (4) will have an impact only on the estimated time, which as you can read above is not accurate due to several reasons not depending on the software but on the machine's behaviour.  
@@ -37,6 +38,7 @@ By selecting the `Fit` checkbox (17) the drawing will be scaled to fit the drawi
 `Regenerate` (18), when checked, will cause the drawing to be regenerated if the main window is resized to adapt to the new drawing area size.  
 If the file selected contains the instructions to engrave a sculpture, the `Sculpture` checkbox (19) **must** be checked because that kind of file is slightly different from the regular ones and the software needs to be informed to correctly read the file.  
 Operating on the `Colors` checkbox (20) it is possible to decide to have the drawing displayed using a grayscale (unchecked) or colors (checked). Depending on the `Gradient` checkbox (21) status, the segments will be drawn using a solid line (unchecked) or a gradient effect (checked).  
+By selecting the `Z Max` checkbox (22) it is possible to highlight the points corresponding to the maximum depth.
 The software only shows segments with positive coordinates, for this reason, when a drawing has parts with negative coordinates, it will be translated to have all of its parts in a positive area (first quadrant of the Cartesian plane). When such a condition occurs, inside the `Offset` field (10) will be stated along which axis the drawing has been translated (X, Y, or X and Y).
 
 **1 -** Drawing area, here is where the drawing will be displayed  
@@ -54,12 +56,13 @@ The software only shows segments with positive coordinates, for this reason, whe
 **19 -** This must be checked when a file containing a sculpture is selected  
 **20 -** When checked, the segments of the drawing are colored, otherwise they will be grayscaled  
 **21 -** When checked, the segments will have a gradient effect to show the difference in depth  
-**22 -** Button to select the file(s) to display  
-**23 -** Starts the drawing process  
-**24 -** Resets everything: input values, drawing area and eventual error messages  
-**25 -** On this line will appear the name(s) of the selected file(s)  
-**26 -** Status bar, this will contain eventual error messages  
-**27 -** Language menu to change the interface language  
+**22 -** When checked, a circle will appear to highlight the points at maximum depth   
+**23 -** Button to select the file(s) to display  
+**24 -** Starts the drawing process  
+**25 -** Resets everything: input values, drawing area and eventual error messages  
+**26 -** On this line will appear the name(s) of the selected file(s)  
+**27 -** Status bar, this will contain eventual error messages  
+**28 -** Language menu to change the interface language  
 
 ## How to compile
 The project has been developed using Visual Studio 2022 CE.
