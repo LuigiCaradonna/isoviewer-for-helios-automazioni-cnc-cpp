@@ -154,11 +154,11 @@ void IsoViewer::initOptions()
         this->initConfigFile();
 
         // Set the checkboxes
-        ui.chk_fit->setChecked(false);
-        ui.chk_autoresize->setChecked(false);
-        ui.chk_color->setChecked(false);
-        ui.chk_gradient->setChecked(false);
-        ui.chk_zmax->setChecked(false);
+        this->ui.chk_fit->setChecked(false);
+        this->ui.chk_autoresize->setChecked(false);
+        this->ui.chk_color->setChecked(false);
+        this->ui.chk_gradient->setChecked(false);
+        this->ui.chk_zmax->setChecked(false);
     }
     else
     {
@@ -186,29 +186,29 @@ void IsoViewer::initOptions()
         // Set the checkboxes according to the config file content
 
         if(j["fit"] == "0")
-            ui.chk_fit->setChecked(false);
+            this->ui.chk_fit->setChecked(false);
         else
-            ui.chk_fit->setChecked(true);
+            this->ui.chk_fit->setChecked(true);
 
         if (j["autoresize"] == "0")
-            ui.chk_autoresize->setChecked(false);
+            this->ui.chk_autoresize->setChecked(false);
         else
-            ui.chk_autoresize->setChecked(true);
+            this->ui.chk_autoresize->setChecked(true);
 
         if (j["color"] == "0")
-            ui.chk_color->setChecked(false);
+            this->ui.chk_color->setChecked(false);
         else
-            ui.chk_color->setChecked(true);
+            this->ui.chk_color->setChecked(true);
 
         if (j["gradient"] == "0")
-            ui.chk_gradient->setChecked(false);
+            this->ui.chk_gradient->setChecked(false);
         else
-            ui.chk_gradient->setChecked(true);
+            this->ui.chk_gradient->setChecked(true);
 
         if (j["zmax"] == "0")
-            ui.chk_zmax->setChecked(false);
+            this->ui.chk_zmax->setChecked(false);
         else
-            ui.chk_zmax->setChecked(true);
+            this->ui.chk_zmax->setChecked(true);
     }
 }
 
@@ -336,8 +336,8 @@ void IsoViewer::mousePosition(const QPointF& pos)
 QVector2D IsoViewer::getCanvasSize()
 {
     return QVector2D(
-        static_cast<float>(ui.canvas->width() - canvas_expanded), 
-        static_cast<float>(ui.canvas->height() - canvas_expanded)
+        static_cast<float>(ui.canvas->width() - this->canvas_expanded),
+        static_cast<float>(ui.canvas->height() - this->canvas_expanded)
     );
 }
 
@@ -877,7 +877,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
                 // A new loop is starting, reset the variable to false
                 point_found = false;
 
-                for (QVector2D point : this->z_max_list)
+                foreach (QVector2D point, this->z_max_list)
                 {
                     // If a point with the same coordinates is already contained by the list
                     if (x == point.x() && y == point.y())
@@ -957,7 +957,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
             subline = line_of_code.split(" ");
 
             // Says that the next coordinate will be the tool lowering
-            coords.append(QVector3D(DOWN, 0, 0));
+            coords.append(QVector3D(this->DOWN, 0, 0));
 
             // Says how much the tool lowers
             coords.append(QVector3D(0, 0, this->truncToDecimal(subline[1].mid(1).toFloat(), 3)));
@@ -979,7 +979,7 @@ QList<QVector3D> IsoViewer::getCoordinates()
              * When an "UP" is found, the last Z coordinate must be read (-10 in this case) to know how much the tool will be raised.
              * The absolute value of the Z must be considered, since the Z is always negative or 0
              */
-            coords.append(QVector3D(UP, 0, 0));
+            coords.append(QVector3D(this->UP, 0, 0));
         }
 
         i++;
@@ -1045,7 +1045,7 @@ void IsoViewer::translateCoords(QList<QVector3D>& coords, int dx, int dy)
 {
     for (int i = 0; i < coords.length(); ++i)
     {
-        if (coords[i][0] != UP && coords[i][0] != DOWN)
+        if (coords[i][0] != this->UP && coords[i][0] != this->DOWN)
         {
             coords[i][0] = coords[i][0] + dx;
             coords[i][1] = coords[i][1] + dy;
@@ -1058,7 +1058,7 @@ void IsoViewer::translateCoords(QList<QVector2D>& coords, int dx, int dy)
 {
     for (int i = 0; i < coords.length(); ++i)
     {
-        if (coords[i][0] != UP && coords[i][0] != DOWN)
+        if (coords[i][0] != this->UP && coords[i][0] != this->DOWN)
         {
             coords[i][0] = coords[i][0] + dx;
             coords[i][1] = coords[i][1] + dy;
@@ -1242,7 +1242,7 @@ void IsoViewer::draw()
 
             // If this is not the end of the file and the tool must be raised
             // that means that the next movement will be to position the tool
-            if (i < num_coords && coords[i][0] == UP)
+            if (i < num_coords && coords[i][0] == this->UP)
             {
                 // Add the vertical movement lenght to the positioning distance
                 positioning_dst += abs(this->last_z);
@@ -1257,7 +1257,7 @@ void IsoViewer::draw()
             }
             // If this is the end of the file and the tool must be raised,
             // the only distance to considerate is the vertical movement, then everything is over
-            else if (coords[i][0] == UP)
+            else if (coords[i][0] == this->UP)
             {
                 // Add the the absolute last z value to the positioning distance
                 positioning_dst += abs(this->last_z);
@@ -1276,7 +1276,7 @@ void IsoViewer::draw()
 
             // If the tool must be lowered(no need to check if we are at the end of the file
             // because if the tool lowerd, for sure there is something else to do)
-            if (coords[i][0] == DOWN)
+            if (coords[i][0] == this->DOWN)
             {
                 // I do not update the Z distance now, because I should read the next tuple to know it.
                 // I postpone that to the next iteration, which reading lowering = True
@@ -1429,14 +1429,15 @@ void IsoViewer::draw()
             QPen pen_hl = QPen(QBrush(color_hl), 3);
 
             // Loop through the z_max_depth list
-            for (QVector2D point : this->z_max_list)
+            foreach (QVector2D point, this->z_max_list)
             {
+                // Draw the circle
                 this->scene->addEllipse(
                     QRect(
-                        (point.x() * this->scale_factor) - ZMAX_CIRCLE_RADIUS,
-                        (this->scene_h - (point.y() * this->scale_factor)) - ZMAX_CIRCLE_RADIUS,
-                        2 * ZMAX_CIRCLE_RADIUS,
-                        2 * ZMAX_CIRCLE_RADIUS
+                        (point.x() * this->scale_factor) - this->ZMAX_CIRCLE_RADIUS,
+                        (this->scene_h - (point.y() * this->scale_factor)) - this->ZMAX_CIRCLE_RADIUS,
+                        2 * this->ZMAX_CIRCLE_RADIUS,
+                        2 * this->ZMAX_CIRCLE_RADIUS
                     ), 
                     pen_hl
                 );
@@ -1484,7 +1485,7 @@ void IsoViewer::changeEvent(QEvent* event)
         {
             QString locale = QLocale::system().name();
             locale.truncate(locale.lastIndexOf('_'));
-            loadLanguage(locale);
+            this->loadLanguage(locale);
         }
         break;
         }
@@ -1579,14 +1580,14 @@ QString IsoViewer::secondsToTimestring(const int seconds)
 
 void IsoViewer::loadLanguage(const QString& rLanguage)
 {
-    if (m_currLang != rLanguage)
+    if (this->m_currLang != rLanguage)
     {
-        m_currLang = rLanguage;
-        QLocale locale = QLocale(m_currLang);
+        this->m_currLang = rLanguage;
+        QLocale locale = QLocale(this->m_currLang);
         QLocale::setDefault(locale);
         QString languageName = QLocale::languageToString(locale.language());
-        switchTranslator(m_translator, QString("isoviewer_%1.qm").arg(rLanguage));
-        switchTranslator(m_translatorQt, QString("qt_%1.qm").arg(rLanguage));
+        switchTranslator(this->m_translator, QString("isoviewer_%1.qm").arg(rLanguage));
+        switchTranslator(this->m_translatorQt, QString("qt_%1.qm").arg(rLanguage));
     }
 }
 
@@ -1606,7 +1607,7 @@ void IsoViewer::switchTranslator(QTranslator& translator, const QString& filenam
 
 void IsoViewer::createLanguageMenu()
 {
-    QActionGroup* langGroup = new QActionGroup(ui.menuLingua);
+    QActionGroup* langGroup = new QActionGroup(this->ui.menuLingua);
     langGroup->setExclusive(true);
 
     connect(langGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotLanguageChanged(QAction*)));
@@ -1615,10 +1616,10 @@ void IsoViewer::createLanguageMenu()
     // QString defaultLocale = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
     // defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "it"
 
-    m_langPath = QApplication::applicationDirPath();
-    m_langPath.append("/languages");
+    this->m_langPath = QApplication::applicationDirPath();
+    this->m_langPath.append("/languages");
 
-    QDir dir(m_langPath);
+    QDir dir(this->m_langPath);
     QStringList fileNames = dir.entryList(QStringList("isoviewer_*.qm"));
 
     for (int i = 0; i < fileNames.size(); ++i)
@@ -1630,16 +1631,16 @@ void IsoViewer::createLanguageMenu()
         locale.remove(0, locale.lastIndexOf('_') + 1); // "it"
 
         QString lang = QLocale::languageToString(QLocale(locale).language());
-        QIcon ico(QString("%1/%2.png").arg(m_langPath).arg(locale));
+        QIcon ico(QString("%1/%2.png").arg(this->m_langPath).arg(locale));
 
         QAction* action = new QAction(ico, lang, this);
         action->setCheckable(true);
         action->setData(locale);
 
-        ui.menuLingua->addAction(action);
+        this->ui.menuLingua->addAction(action);
         langGroup->addAction(action);
 
-        // Set default translators and language checked
+        // Highlight, inside the menu, the current language
         if (this->language == locale)
         {
             action->setChecked(true);
