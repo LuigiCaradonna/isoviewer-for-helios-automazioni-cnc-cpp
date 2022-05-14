@@ -10,6 +10,12 @@ IsoViewer::IsoViewer(QWidget *parent)
     // Sets an icon for the window
     this->setWindowIcon(QIcon("favicon.png"));
 
+    // Set the default path in case the config file has an empty one
+    this->folder = "C:/helios1/archivio";
+
+    // Set the options according to the config file
+    this->initOptions();
+
     this->createLanguageMenu();
 
     // Instantiates a scene
@@ -47,12 +53,6 @@ IsoViewer::IsoViewer(QWidget *parent)
     this->ui.lbl_offset_value->setStyleSheet("background-color: #DDDDDD; border: 1px solid #BBBBBB;");
     this->ui.lbl_eng_dst_value->setStyleSheet("background-color: #DDDDDD; border: 1px solid #BBBBBB;");
     this->ui.lbl_pos_dst_value->setStyleSheet("background-color: #DDDDDD; border: 1px solid #BBBBBB;");
-
-    // Set the default path in case the config file has an empty one
-    this->folder = "C:/helios1/archivio";
-
-    // Set the checkboxes according to the config file
-    this->initOptions();
 
     // Timer to manage the delay when regenerating the drawing when the scene is resized
     this->reset_timer = new QTimer();
@@ -145,9 +145,14 @@ void IsoViewer::initOptions()
     // If the config file does not exists
     if (!fileExists(this->config_file))
     {
+        // Format systems language to use it as default
+        this->language = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
+        this->language.truncate(this->language.lastIndexOf('_')); // e.g. "it"
+        this->loadLanguage(this->language);
+
         // Initialize a new config file with the default values
         this->initConfigFile();
-        
+
         // Set the checkboxes
         ui.chk_fit->setChecked(false);
         ui.chk_autoresize->setChecked(false);
@@ -167,6 +172,11 @@ void IsoViewer::initOptions()
         ifs >> j;
 
         ifs.close();
+
+        // Set the language
+        std::string lang = j["lang"];
+        this->language = QString::fromUtf8(lang.c_str());
+        this->loadLanguage(this->language);
 
         // If the folder key is present
         if (j["folder"] != "")
@@ -300,6 +310,15 @@ void IsoViewer::updateFolder(const QString& f)
     this->folder = f.toStdString();
 
     this->updateOptions("folder", this->folder);
+}
+
+void IsoViewer::updateLanguage(const QString& l)
+{
+    // f variable is a QString, convert it to std::string before to assign it to the class member 
+    // and before to call the update function
+    this->language = l;
+
+    this->updateOptions("lang", this->language.toStdString());
 }
 
 /********** ACCESSORS **********/
@@ -1455,12 +1474,12 @@ void IsoViewer::changeEvent(QEvent* event)
     {
         switch (event->type())
         {
-        // this event is send if a translator is loaded
+        // this event is sent if a translator is loaded
         case QEvent::LanguageChange:
             ui.retranslateUi(this);
             break;
 
-        // this event is send, if the system, language changes
+        // this event is sent if the system language changes
         case QEvent::LocaleChange:
         {
             QString locale = QLocale::system().name();
@@ -1470,6 +1489,7 @@ void IsoViewer::changeEvent(QEvent* event)
         break;
         }
     }
+
     QMainWindow::changeEvent(event);
 }
 
@@ -1481,6 +1501,9 @@ void IsoViewer::slotLanguageChanged(QAction* action)
     {
         // Load the language dependent on the action content
         loadLanguage(action->data().toString());
+
+        // Update the config file
+        this->updateOptions("lang", action->data().toString().toStdString());
     }
 }
 
@@ -1514,6 +1537,7 @@ void IsoViewer::initConfigFile()
     j["gradient"] = "0";
     j["zmax"] = "0";
     j["folder"] = "C:/helios1/archivio";
+    j["lang"] = this->language.toStdString();
 
     // Write the JSON converted to string into the file
     ofs << j.dump();
@@ -1575,7 +1599,7 @@ void IsoViewer::switchTranslator(QTranslator& translator, const QString& filenam
     QString path = QApplication::applicationDirPath();
     path.append("/languages/");
 
-    // Here Path and Filename has to be entered because the system didn't find the QM Files else
+    // Here Path and Filename has to be entered because the system didn't find the QM Files
     if (translator.load(path + filename))
         qApp->installTranslator(&translator);
 }
@@ -1588,8 +1612,8 @@ void IsoViewer::createLanguageMenu()
     connect(langGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotLanguageChanged(QAction*)));
 
     // Format systems language
-    QString defaultLocale = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
-    defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "it"
+    // QString defaultLocale = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
+    // defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "it"
 
     m_langPath = QApplication::applicationDirPath();
     m_langPath.append("/languages");
@@ -1616,7 +1640,7 @@ void IsoViewer::createLanguageMenu()
         langGroup->addAction(action);
 
         // Set default translators and language checked
-        if (defaultLocale == locale)
+        if (this->language == locale)
         {
             action->setChecked(true);
         }

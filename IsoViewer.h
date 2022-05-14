@@ -156,6 +156,15 @@ public:
      */
     void updateFolder(const QString & f);
 
+    /*
+     * Updates the language to use for the UI.
+     *
+     * @param   const QString&      l      - Language code (it, en...)
+     *
+     * @return void
+     */
+    void updateLanguage(const QString& l);
+
 
     /********** ACCESSORS **********/
 
@@ -361,6 +370,9 @@ private:
 
     // Radius of the circle to highlight the max depth points
     const int ZMAX_CIRCLE_RADIUS = 7;
+
+    // Code of the language to use
+    QString language;
 
     // List of strings containing the selected ISO files
     QStringList iso_files;
