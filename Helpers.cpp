@@ -31,17 +31,10 @@ QString Helpers::secondsToTimestring(const int seconds)
     return hh + ":" + mm + ":" + ss;
 }
 
-bool Helpers::fileExists(const std::string& name)
+bool Helpers::pathFileExists(const std::string& s)
 {
-    if (FILE* file = fopen(name.c_str(), "r"))
-    {
-        fclose(file);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    struct stat buffer;
+    return (stat(s.c_str(), &buffer) == 0);
 }
 
 QString Helpers::elideText(const QLabel& label, const QString& text)

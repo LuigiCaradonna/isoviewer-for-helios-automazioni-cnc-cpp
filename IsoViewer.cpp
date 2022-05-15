@@ -13,6 +13,18 @@ IsoViewer::IsoViewer(QWidget *parent)
     // Set the default path in case the config file has an empty one
     this->folder = "C:/helios1/archivio";
 
+    this->config = new Config(this->config_file);
+
+    this->coord_manager = new CoordManager();
+
+    /* 
+        Format systems language to use it as default, 
+        the initOptions() function will change it if a valid config file is found.
+    */
+    this->language = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
+    this->language.truncate(this->language.lastIndexOf('_')); // e.g. "it"
+    this->loadLanguage(this->language);
+
     // Set the options according to the config file
     this->initOptions();
 
@@ -57,9 +69,11 @@ IsoViewer::IsoViewer(QWidget *parent)
     // Timer to manage the delay when regenerating the drawing when the scene is resized
     this->reset_timer = new QTimer();
     
-    // Set the timer as single shot.
-    // I'm not directly using a singleshot timer because it doesn't have the stop() method which
-    // is required to simulate a reset as implemented in the resizeEvent() method
+    /* 
+        Set the timer as single shot.
+        I'm not directly using a singleshot timer because it doesn't have the stop() method which
+        is required to simulate a reset as implemented in the resizeEvent() method
+    */
     this->reset_timer->setSingleShot(true);
 
     // Connect the timer's timeout signal to the draw() method
@@ -70,8 +84,6 @@ IsoViewer::IsoViewer(QWidget *parent)
     
     // Delay in milliseconds;
     this->delay_timeout = 500;
-
-    this->coord_manager = new CoordManager();
 }
 
 
@@ -81,6 +93,7 @@ IsoViewer::~IsoViewer()
 {
     delete this->scene;
     delete this->reset_timer;
+    delete this->config;
     delete this->coord_manager;
 }
 
@@ -145,23 +158,14 @@ void IsoViewer::showEvent(QShowEvent* event)
 
 void IsoViewer::initOptions()
 {
-    // If the config file does not exists
-    if (!Helpers::fileExists(this->config_file))
+    // If the config file does not exist or it is not valid
+    if (!Helpers::pathFileExists(this->config_file) || !this->config->checkConfigFile())
     {
-        // Format systems language to use it as default
-        this->language = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
-        this->language.truncate(this->language.lastIndexOf('_')); // e.g. "it"
-        this->loadLanguage(this->language);
-
         // Initialize a new config file with the default values
-        this->initConfigFile();
+        this->config->initConfigFile(this->language.toStdString());
 
-        // Set the checkboxes
-        this->ui.chk_fit->setChecked(false);
-        this->ui.chk_autoresize->setChecked(false);
-        this->ui.chk_color->setChecked(false);
-        this->ui.chk_gradient->setChecked(false);
-        this->ui.chk_zmax->setChecked(false);
+        // Now a new valid config file exists, call again this function to load the updated file
+        this->initOptions();
     }
     else
     {
@@ -218,52 +222,29 @@ void IsoViewer::initOptions()
 
 /********** UPDATE FUNCTIONS **********/
 
-void IsoViewer::updateOptions(const std::string& key, std::string value)
+void IsoViewer::updateOptions(const std::string& key, const std::string& value)
 {
-    // If the config file does not exists, it should since it is checked as the software runs,
-    // but a user playing the joker could delete it while the software is running.
-    if (!Helpers::fileExists(this->config_file))
+    bool reload = false;
+
+    /* 
+        If the config file does not exists or it is not valid, 
+        (this shouldn't happen since it is checked as the software runs,
+        but a user playing the joker could delete it while the software is running).
+     */ 
+    if (!Helpers::pathFileExists(this->config_file) || !this->config->checkConfigFile())
     {
         // Initialize a new one
-        this->initConfigFile();
+        this->config->initConfigFile(this->language.toStdString());
 
-        // Set the options as the current checkboxes state
-        this->toggleFit();
-        this->toggleAutoresize();
-        this->toggleColor();
-        this->toggleGradient();
-        this->toggleZMax();
+        // A new config file has been generated
+        reload = true;
     }
 
-    /*
-        The file is not opened directly in read/write mode, because it is required to open it with the "trunc" flag
-        to be able to overwrite the previous content, with that flag set, the file results to be ampty and
-        the attempt to load the json string would fail.
-    */
+    this->config->updateConfigFile(key, value);
 
-    // Open the file in read mode
-    std::ifstream ifs(this->config_file);
-    
-    // Create a json object instance
-    json j;
-
-    // Load the file content into the json object
-    ifs >> j;
-
-    // Update the value at the key position
-    j[key] = value;
-
-    // Close the file
-    ifs.close();
-
-    // Open the file in write mode, trunc flag to overwrite the existing file
-    std::ofstream ofs(this->config_file, std::ofstream::trunc);
-
-    // Write the JSON converted to string into the file
-    ofs << j.dump();
-
-    // Close the file
-    ofs.close();
+    if (reload)
+        // Call the initOptions() function to load the updated file
+        this->initOptions();
 }
 
 void IsoViewer::toggleFit()
@@ -308,8 +289,10 @@ void IsoViewer::toggleZMax()
 
 void IsoViewer::updateFolder(const QString& f)
 {
-    // f variable is a QString, convert it to std::string before to assign it to the class member 
-    // and before to call the update function
+    /* 
+        f variable is a QString, convert it to std::string before to assign it to the class member 
+        and before to call the update function
+    */
     this->folder = f.toStdString();
 
     this->updateOptions("folder", this->folder);
@@ -317,10 +300,16 @@ void IsoViewer::updateFolder(const QString& f)
 
 void IsoViewer::updateLanguage(const QString& l)
 {
-    // f variable is a QString, convert it to std::string before to assign it to the class member 
-    // and before to call the update function
+    /*
+        In this case, the class member "language" is a QString itself, no need to convert l
+        to stdString before the assignment
+    */
     this->language = l;
 
+    /* 
+        The convertion must be done here because the options are stored inside the config file
+        as stdStrings
+    */
     this->updateOptions("lang", this->language.toStdString());
 }
 
@@ -371,8 +360,10 @@ void IsoViewer::resetErrors()
 
 void IsoViewer::resetScene(bool reset_to_draw)
 {
-    // Remove the scene from the view
-    // this is not really required, but it speeds up the reset process
+    /* 
+        Remove the scene from the view
+        this is not really required, but it speeds up the reset process
+    */
     this->ui.canvas->setScene(NULL);
     // Reset the scene
     this->scene->clear();
@@ -485,9 +476,11 @@ bool IsoViewer::checkData()
         this->ui.in_width->setText("0");
     }
 
-    // Check if the width value is valid:
-    // try to convert it to integer, not float, because if this succeeds, it will be possible to
-    // directly use the number, the width, being considered in mm, has to be an integer.
+    /* 
+        Check if the width value is valid:
+        try to convert it to integer, not float, because if this succeeds, it will be possible to
+        directly use the number, the width, being considered in mm, has to be an integer.
+    */
     int width = this->ui.in_width->text().toInt(&ok);
     if (!ok || width < 0)
     {
@@ -509,8 +502,10 @@ bool IsoViewer::checkData()
         this->ui.in_height->setText("0");
     }
 
-    // Check if the height value is valid
-    // Same as the width case
+    /* 
+        Check if the height value is valid
+        Same as the width case
+    */
     ok = true;
     int height = this->ui.in_height->text().toInt(&ok);
     if (!ok || height < 0)
@@ -533,8 +528,10 @@ bool IsoViewer::checkData()
         this->ui.in_tool_speed->setText("1000");
     }
 
-    // Check if the speed tool value is valid
-    // Same as the width
+    /*
+        Check if the speed value is valid
+        Same as the width case
+    */
     ok = true;
     int tool_speed = this->ui.in_tool_speed->text().toInt(&ok);
     if (!ok || tool_speed <= 0)
@@ -573,9 +570,11 @@ bool IsoViewer::checkData()
 
 float IsoViewer::scaleFactor(int w, int h)
 {
-    // I do not use this->scene_w and this->scene_h set into showEvent()
-    // for the size of the scene, because after that the window is shown it could have been
-    // resized and the canvas size could have been changed
+    /* 
+        I do not use this->scene_w and this->scene_h set into showEvent()
+        for the size of the scene, because after that the window is shown it could have been
+        resized and the canvas size could have been changed.
+    */
 
     // Canvas size
     QVector2D canvas_size = this->getCanvasSize();
@@ -639,15 +638,19 @@ void IsoViewer::setScene()
         {
             this->scale_factor = this->scaleFactor(width, height);
 
-            // The scale factor must be != 1 only if the regular drawing's size exceeds the canvas
-            // which happens if the scale factor calculated is less than 1
+            /*
+                The scale factor must be != 1 only if the regular drawing's size exceeds the canvas
+                which happens if the scale factor calculated is less than 1.
+            */
             if (this->scale_factor >= 1)
             {
                 // No need to fit the drawing, reset the scale factor to 1
                 this->scale_factor = 1;
 
-                // Both the canvas' dimensions are bigger or same then the relative ones of the drawing
-                // Set the scene as big as the canvas
+                /* 
+                    Both the canvas' dimensions are bigger or same then the relative ones of the drawing
+                    Set the scene as big as the canvas.
+                */
                 this->scene_w = canvas_size.x();
                 this->scene_h = canvas_size.y();
             }
@@ -804,13 +807,17 @@ void IsoViewer::draw()
         float abs_z_max = abs(coord_manager->getZMax());
 
         bool draw_color = this->ui.chk_color->isChecked();
-        // Use the gradient effect if the user required it explicitly, or if the iso file contains a sculpture.
-        // The content of a sculpture iso file is not recognizable without the gradient effect.
+        /* 
+            Use the gradient effect if the user required it explicitly, or if the iso file contains a sculpture.
+            The content of a sculpture iso file is not recognizable without the gradient effect.
+        */
         bool draw_gradient = this->ui.chk_gradient->isChecked() || this->ui.chk_sculpture->isChecked();
 
-        // If the user doesn't want to fit the visible area AND the scale factor is > 1
-        // The second condition is to force the scaling down when the drawing size exceeds the canvas size
-        // in that case the scale factor will be < 1 and must not be changed or part of it will not be visible
+        /* 
+            If the user doesn't want to fit the visible area AND the scale factor is > 1
+            The second condition is to force the scaling down when the drawing size exceeds the canvas size
+            in that case the scale factor will be < 1 and must not be changed or part of it will not be visible.
+        */
         if (!this->ui.chk_fit->isChecked() && this->scale_factor > 1)
         {
             // Set the scale factor to a neutral value
@@ -858,9 +865,11 @@ void IsoViewer::draw()
         progress_dialog.setModal(true);
         progress_dialog.setMinimumDuration(0);
 
-        // It is not convenient to update the progress bar at each loop iteration, that would
-        // result in a very slow execution, this sets the update to be executed once every
-        // 1 / 200 of the total iterations
+        /* 
+            It is not convenient to update the progress bar at each loop iteration, that would
+            result in a very slow execution, this sets the update to be executed once every
+            1 / 200 of the total iterations.
+        */
         int progress_step = int(num_coords / 200);
 
         for (int i = 0; i < num_coords; i++)
@@ -881,8 +890,10 @@ void IsoViewer::draw()
                 }
             }
 
-            // If this is not the end of the file and the tool must be raised
-            // that means that the next movement will be to position the tool
+            /* 
+                If this is not the end of the file and the tool must be raised
+                that means that the next movement will be to position the tool.
+            */
             if (i < num_coords && coords[i][0] == coord_manager->getUp())
             {
                 // Add the vertical movement lenght to the positioning distance
@@ -896,8 +907,10 @@ void IsoViewer::draw()
                 // Terminate the iteration
                 continue;
             }
-            // If this is the end of the file and the tool must be raised,
-            // the only distance to considerate is the vertical movement, then everything is over
+            /* 
+                If this is the end of the file and the tool must be raised,
+                the only distance to considerate is the vertical movement, then everything is over.
+            */
             else if (coords[i][0] == coord_manager->getUp())
             {
                 // Add the the absolute last z value to the positioning distance
@@ -915,13 +928,17 @@ void IsoViewer::draw()
                 continue;
             }
 
-            // If the tool must be lowered(no need to check if we are at the end of the file
-            // because if the tool lowerd, for sure there is something else to do)
+            /* 
+                If the tool must be lowered(no need to check if we are at the end of the file
+                because if the tool lowerd, for sure there is something else to do).
+            */
             if (coords[i][0] == coord_manager->getDown())
             {
-                // I do not update the Z distance now, because I should read the next tuple to know it.
-                // I postpone that to the next iteration, which reading lowering = True
-                // will know that it has to calculate the distance.
+                /* 
+                    I do not update the Z distance now, because I should read the next tuple to know it.
+                    I postpone that to the next iteration, which reading lowering = True
+                    will know that it has to calculate the distance.
+                */
 
                 // Set the flags
                 lowering = true;
@@ -980,9 +997,11 @@ void IsoViewer::draw()
                 dz = pow(coords[i][2] - current_position[2], 2);
                 engraving_dst += sqrt(dx + dy + dz);
 
-                // Draw the segment until the point indicated by the coordinate
-                // X stays as read from the file, the Y must be calculated because the Y tha machine's axis
-                // values increas from bottom to top, in the canvas instead goes from top to bottom
+                /* 
+                    Draw the segment until the point indicated by the coordinate
+                    X stays as read from the file, the Y must be calculated because the Y tha machine's axis
+                    values increas from bottom to top, in the canvas instead goes from top to bottom.
+                */
                 p1 = QPoint(
                     current_position[0] * this->scale_factor,
                     this->scene_h - (current_position[1] * this->scale_factor)
@@ -1098,8 +1117,10 @@ void IsoViewer::draw()
         this->ui.lbl_eng_dst_value->setText(text_number.asprintf("%.3f", engraving_dst));
         this->ui.lbl_pos_dst_value->setText(text_number.asprintf("%.3f", positioning_dst));
 
-        // If the flag is set to True, that means that the drawing has ben regenerated
-        // after that the scene was resized
+        /* 
+            If the flag is set to True, that means that the drawing has ben regenerated
+            after that the scene was resized
+        */
         if (this->resize_timer_running)
         {
             // Says that the timer timed outand it not running anymore
@@ -1116,12 +1137,12 @@ void IsoViewer::changeEvent(QEvent* event)
     {
         switch (event->type())
         {
-        // this event is sent if a translator is loaded
+        // This event is sent if a translator is loaded
         case QEvent::LanguageChange:
             ui.retranslateUi(this);
             break;
 
-        // this event is sent if the system language changes
+        // This event is sent if the system language changes
         case QEvent::LocaleChange:
         {
             QString locale = QLocale::system().name();
@@ -1151,29 +1172,6 @@ void IsoViewer::slotLanguageChanged(QAction* action)
 
 
 /********** PRIVATE FUNCTIONS **********/
-
-void IsoViewer::initConfigFile()
-{
-    // Create and open a text file
-    std::ofstream ofs(this->config_file);
-
-    // Create a json object with the default configuration values
-    json j;
-
-    j["fit"] = "0";
-    j["autoresize"] = "0";
-    j["color"] = "0";
-    j["gradient"] = "0";
-    j["zmax"] = "0";
-    j["folder"] = "C:/helios1/archivio";
-    j["lang"] = this->language.toStdString();
-
-    // Write the JSON converted to string into the file
-    ofs << j.dump();
-
-    // Close the file
-    ofs.close();
-}
 
 void IsoViewer::loadLanguage(const QString& rLanguage)
 {
@@ -1209,25 +1207,31 @@ void IsoViewer::createLanguageMenu()
 
     connect(langGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotLanguageChanged(QAction*)));
 
-    // Format systems language
-    // QString defaultLocale = QLocale::system().name(); // e.g. "it_IT" then truncated to "it"
-    // defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "it"
-
+    /*
+        Build the path to the folder containing the language files.
+        It is the folder where this software is stored, 
+        and from there inside the "language" subfolder.
+    */
     this->m_langPath = QApplication::applicationDirPath();
     this->m_langPath.append("/languages");
 
     QDir dir(this->m_langPath);
-    QStringList fileNames = dir.entryList(QStringList("isoviewer_*.qm"));
+    // List of the language files
+    QStringList language_files = dir.entryList(QStringList("isoviewer_*.qm"));
 
-    for (int i = 0; i < fileNames.size(); ++i)
+    for (int i = 0; i < language_files.size(); ++i)
     {
         // Get locale extracted by filename
         QString locale;
-        locale = fileNames[i]; // "isoviewer_it.qm"
-        locale.truncate(locale.lastIndexOf('.')); // "isoviewer_it"
-        locale.remove(0, locale.lastIndexOf('_') + 1); // "it"
+        locale = language_files[i]; // "e.g. isoviewer_it.qm"
+        locale.truncate(locale.lastIndexOf('.')); // "e.g. isoviewer_it"
+        locale.remove(0, locale.lastIndexOf('_') + 1); // "e.g. it"
 
         QString lang = QLocale::languageToString(QLocale(locale).language());
+        /*
+            Load the icon file, it is inside the same language folder
+            and the name is <languagecode>.png
+        */
         QIcon ico(QString("%1/%2.png").arg(this->m_langPath).arg(locale));
 
         QAction* action = new QAction(ico, lang, this);

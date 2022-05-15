@@ -18,6 +18,7 @@
 #include "ui_IsoViewer.h"
 #include "CoordManager.h"
 #include "Helpers.h"
+#include "Config.h"
 
 using json = nlohmann::json;
 
@@ -108,11 +109,11 @@ public:
      * Updates the value of config file relative to the provided key.
      * 
      * @param   const std::string&      key    - Name of the option to change.
-     * @param   std::string             value  - Value to set.
+     * @param   const std::string&      value  - Value to set.
      * 
      * @return void
      */
-    void updateOptions(const std::string& key, std::string value);
+    void updateOptions(const std::string& key, const std::string& value);
 
     /*
      * Toggles the setting value for the fit option inside the config file.
@@ -330,6 +331,8 @@ private:
     // Name of the configuration file
     const std::string config_file = "config.cfg";
 
+    const std::string default_folder = "C:/helios1/archivio";
+
     // Folder to open when clicking the "Load Files" button, initialized with the value contained into
     // the config file and updated each time a file is loaded from a different folder to always open
     // the last used folder.
@@ -365,6 +368,9 @@ private:
     // Scene where the drawing will be displayed
     MyGraphicScene* scene;
 
+    // Configuration manager
+    Config* config;
+
     // Coordinates manager
     CoordManager* coord_manager;
 
@@ -384,13 +390,6 @@ private:
     QString m_langPath;
 
     /********** PRIVATE FUNCTIONS **********/
-
-    /*
-     * Initializes a new config file.
-     *
-     * @return  void
-     */
-    void initConfigFile();
 
     /*
      * Loads a language by the given language shortcut

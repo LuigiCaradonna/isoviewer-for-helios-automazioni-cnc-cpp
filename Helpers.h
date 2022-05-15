@@ -3,6 +3,7 @@
 #include "qstring.h"
 #include "qlabel.h"
 #include <cmath>
+#include <filesystem>
 
 class Helpers
 {
@@ -29,11 +30,11 @@ public:
     /*
      * Checks if the given string corresponds to an existing file.
      *
-     * @param   const std::string&      name    - Name of the file to check.
+     * @param   const std::string&      s    - String containing the path or path\file to check.
      *
      * @return  bool    true if the file exists, false otherwise.
      */
-	static bool fileExists(const std::string& name);
+	static bool pathFileExists(const std::string& s);
 
     /*
      * Elides a long text to fit the label width.

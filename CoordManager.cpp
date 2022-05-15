@@ -115,8 +115,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
     // Says if a point has been found into the z_max_list
     bool point_found = false;
 
-    // The position where the engraving starts is after the second G12 Z0
-    // the variable is a counter to recognize it
+    /* 
+        The position where the engraving starts is after the second G12 Z0
+        the variable is a counter to recognize it.
+    */
     int z_down = 0;
 
     // At each iteration, this will contain the current line of code splitted
@@ -143,8 +145,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
         file.close();
     }
 
-    // The PGR files containing a sculpture are slightly different from the general ones.
-    // If the file to show contains a sculpture (the user has to tell us)
+    /* 
+        The PGR files containing a sculpture are slightly different from the general ones.
+        If the file to show contains a sculpture (the user has to tell us).
+    */
     if (sculpture)
     {
         int j = 0;
@@ -152,9 +156,11 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
 
         foreach(QString loc, iso)
         {
-            // Find the line where an ISO file begins.
-            // This is inside a loop because several files could have been queued into one and
-            // the 2 lines below must be added after the beginning of each of them.
+            /* 
+                Find the line where an ISO file begins.
+                This is inside a loop because several files could have been queued into one and
+                the 2 lines below must be added after the beginning of each of them.
+            */
             if (loc.indexOf("QUOTE RELATIVE") == 0)
             {
                 // Add at the beginning of the list
@@ -179,9 +185,11 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
     progress_dialog.setModal(true);
     progress_dialog.setMinimumDuration(0);
 
-    // It is not convenient to update the progress bar at each loop iteration, that would
-    // result in a very slow execution, this sets the update to be executed once every
-    // 1 / 500 of the total iterations
+    /* 
+        It is not convenient to update the progress bar at each loop iteration, that would
+        result in a very slow execution, this sets the update to be executed once every
+        1 / 500 of the total iterations.
+    */
     int progress_step = int(num_rows / 500);
 
     // Counter for the prograss dialog
@@ -215,8 +223,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
             // Split the code
             subline = line_of_code.split(" ");
 
-            // The second element is the X coordinate, remove the first character (X)
-            // limit the number to 3 decimals
+            /* 
+                The second element is the X coordinate, remove the first character (X)
+                limit the number to 3 decimals.
+            */
             x = Helpers::truncToDecimal(subline[1].mid(1).toFloat(), 3);
 
             // Update the x min
@@ -230,8 +240,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
                 this->x_max = x;
             }
 
-            // The third element is the Y coordinate, remove the first character (Y)
-            // limit the number to 3 decimals
+            /* 
+                The third element is the Y coordinate, remove the first character (Y)
+                limit the number to 3 decimals.
+            */
             y = Helpers::truncToDecimal(subline[2].mid(1).toFloat(), 3);
 
             // Update the y min
@@ -245,8 +257,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
                 this->y_max = y;
             }
 
-            // The fourth element is the Z coordinate, remove the first character (Z)
-            // limit the number to 3 decimals
+            /* 
+                The fourth element is the Z coordinate, remove the first character (Z)
+                limit the number to 3 decimals.
+            */
             z = Helpers::truncToDecimal(subline[3].mid(1).toFloat(), 3);
 
             // Update the z max
@@ -263,8 +277,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
             // This point is at the same depth as the points already in the list
             else if (z == this->z_max)
             {
-                // The tool could pass multiple times over the same point, we do not want to highlight
-                // multiple times the same point
+                /* 
+                    The tool could pass multiple times over the same point, we do not want to highlight
+                    multiple times the same point.
+                */
 
                 // A new loop is starting, reset the variable to false
                 point_found = false;
@@ -295,20 +311,26 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
         // Rows starting with G12 X indicate a repositioning over the XY plane
         else if (line_of_code.indexOf("G12 X") == 0)
         {
-            // Considering the positioning, X an Y min / max must not be calculated from where the tool starts
-            // or X and Y min would always be 0 since it is the origin of the job, they must be considered
-            // from the next position, that is where the the tool lowers for the first time to engrave.
-            // It is not sure that this will be the min or max, but it is a valid position to consider.
+            /* 
+                Considering the positioning, X an Y min / max must not be calculated from where the tool starts
+                or X and Y min would always be 0 since it is the origin of the job, they must be considered
+                from the next position, that is where the the tool lowers for the first time to engrave.
+                It is not sure that this will be the min or max, but it is a valid position to consider.
+            */
 
             // Split the code
             subline = line_of_code.split(" ");
 
-            // The second element is the X coordinate, remove the first character (X)
-            // limit the number to 3 decimals
+            /* 
+                The second element is the X coordinate, remove the first character (X)
+                limit the number to 3 decimals.
+            */
             x = Helpers::truncToDecimal(subline[1].mid(1).toFloat(), 3);
 
-            // The third element is the Y coordinate, remove the first character (Y)
-            // limit the number to 3 decimals
+            /* 
+                The third element is the Y coordinate, remove the first character (Y)
+                limit the number to 3 decimals.
+            */
             y = Helpers::truncToDecimal(subline[2].mid(1).toFloat(), 3);
 
             // If the X and Y values are not 0, an engraving will start from this point
@@ -377,8 +399,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
         i++;
     }
 
-    // Check whether the X and/or Y somewhere become negative and take everything back to positive values
-    // or it will not be possible to draw on the scene, which only accepts positive coordinates
+    /* 
+        Check whether the X and/or Y somewhere become negative and take everything back to positive values
+        or it will not be possible to draw on the scene, which only accepts positive coordinates.
+    */
     if (this->x_min < 0)
     {
         this->offset_x = abs(this->x_min);
@@ -399,18 +423,22 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
         this->translateCoords(coords, this->offset_x, this->offset_y);
         this->translateCoords(this->z_max_list, this->offset_x, this->offset_y);
 
-        // Update the x/y min and max
-        // min will be 0, max are the old max plus the absolute value of the old mins
+        /* 
+            Update the x/y min and max
+            min will be 0, max are the old max plus the absolute value of the old mins.
+        */
         this->x_max += abs(this->x_min);
         this->y_max += abs(this->y_min);
         this->x_min = 0;
         this->y_min = 0;
     }
-    // If the user wants to fit the drawing into the canvas AND didn't provide a size for the slab
-    // To check if the size was provided is enough to check for one of them, the validation functions
-    // takes care thet both or none are set.
-    // There is no need to reposition the drawing in case the slab size was provided, it is always considered
-    // positioned on (0, 0)
+    /* 
+        If the user wants to fit the drawing into the canvas AND didn't provide a size for the slab
+        To check if the size was provided is enough to check for one of them, the validation functions
+        takes care thet both or none are set.
+        There is no need to reposition the drawing in case the slab size was provided, it is always considered
+        positioned on (0, 0).
+    */
     else if (fit && !size_given)
     {
         // Translate the drawing to remove the eventual space to the left and under the drawing
@@ -419,8 +447,10 @@ QList<QVector3D> CoordManager::processCoordinates(const QStringList& iso_files, 
             this->translateCoords(coords, -this->x_min, -this->y_min);
             this->translateCoords(this->z_max_list, -this->x_min, -this->y_min);
 
-            // Update the x/y min and max
-            // min will be 0, max are the old max minus the amount of the translation along the relative axis
+            /* 
+                Update the x/y min and max
+                min will be 0, max are the old max minus the amount of the translation along the relative axis.
+            */
             this->x_max -= this->x_min;
             this->y_max -= this->y_min;
             this->x_min = 0;

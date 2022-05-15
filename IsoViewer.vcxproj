@@ -88,6 +88,7 @@
     <QtRcc Include="IsoViewer.qrc" />
     <QtUic Include="IsoViewer.ui" />
     <QtMoc Include="IsoViewer.h" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="CoordManager.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="IsoViewer.cpp" />
@@ -95,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CoordManager.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="json.hpp" />
   </ItemGroup>
